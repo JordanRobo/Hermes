@@ -12,6 +12,8 @@ use handlers::*;
 use std::fs;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations");
+pub const SVG: &str = include_str!("../assets/svg/logo.svg");
+pub const SVG_TEMPLATE: &str = include_str!("../assets/svg/template.svg");
 
 fn establish_connection() -> SqliteConnection {
     let home_dir = dirs::home_dir().expect("Failed to get home directory");
@@ -83,7 +85,7 @@ fn main() -> anyhow::Result<()> {
             SettingsAction::View => settings::view_settings(conn)?,
             SettingsAction::Update => settings::update_settings(conn)?,
         },
-        Entity::Print(cmd) => print::print_invoice(conn, &cmd.id)?,
+        Entity::Print => print::print_invoice(conn)?,
     }
 
     Ok(())

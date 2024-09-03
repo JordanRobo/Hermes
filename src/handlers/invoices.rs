@@ -32,7 +32,7 @@ fn add_invoice_item(input_id: i32, conn: &mut SqliteConnection) -> anyhow::Resul
         description: item_description,
         quantity: item_quantity,
         unit_price: item_price,
-        gst: item_gst,
+        gst: item_gst.round_ties_even(),
         total: item_total,
     };
 

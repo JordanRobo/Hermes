@@ -1,6 +1,6 @@
 [package]
 name = "hermes"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["Jordan Robinson <hello.world@jordanrobo.xyz>"]
 edition = "2021"
 description = "A simple command line interface application to manage and print invoices for my clients"
@@ -20,3 +20,4 @@ once_cell = "1.17.1"
 chrono = { version = "0.4.22", features = ["serde"] }
 shellexpand = "2.1"
 dirs = "5.0"
+printpdf = { version = "0.7.0", features = ["svg"] }

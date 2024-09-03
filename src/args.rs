@@ -12,7 +12,7 @@ pub enum Entity {
     Invoices(InvoicesCommand),
     Clients(ClientsCommand),
     Settings(SettingsCommand),
-    Print(PrintCommand),
+    Print,
 }
 
 #[derive(Debug, Args)]
@@ -81,10 +81,4 @@ pub enum SettingsAction {
     View,
     /// Update settings
     Update,
-}
-
-#[derive(Debug, Args)]
-pub struct PrintCommand {
-    /// Invoice ID to print
-    pub id: String,
 }

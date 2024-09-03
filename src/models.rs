@@ -82,5 +82,6 @@ pub struct NewClient {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PrintInvoice {
     pub invoice: Invoice,
+    pub setting: Setting,
     pub items: Vec<InvoiceItem>,
 }
