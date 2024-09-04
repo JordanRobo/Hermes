@@ -44,47 +44,44 @@ fn main() -> anyhow::Result<()> {
     let conn = &mut establish_connection();
 
     match args.entity {
-        Entity::Invoices(cmd) => {
+        Entity::Invoice(cmd) => {
             if cmd.new {
                 invoices::create_invoice(conn)?;
-            } else if let Some(id) = cmd.id {
-                if cmd.delete {
-                    //invoices::delete_invoice(conn, &id)?;
-                    println!("Deleting invoice {id}");
-                } else if cmd.update {
-                    // invoices::edit_invoice(conn, &id)?;
-                    println!("Edit invoice {id}");
-                } else {
-                    // invoices::view_invoice(conn, &id)?;
-                    println!("View invoice {id}");
-                }
+            } else if cmd.delete {
+                invoices::delete_invoice(conn)?;
+            } else if cmd.update {
+                invoices::edit_invoice(conn)?;
+                println!("Edit invoice");
             } else {
                 match cmd.action {
-                    Some(InvoicesAction::List) | None => invoices::list_invoices(conn)?,
+                    Some(InvoiceAction::List) | None => invoices::list_invoices(conn)?,
                 }
             }
         }
-        Entity::Clients(cmd) => {
+        Entity::Client(cmd) => {
             if cmd.new {
                 clients::create_client(conn)?;
-            } else if let Some(id) = cmd.id {
-                if cmd.delete {
-                    // clients::delete_client(conn, &id)?;
-                    println!("Deleting client {id}");
-                } else if cmd.update {
-                    // clients::edit_client(conn, &id)?;
-                    println!("Edit client {id}");
-                }
+            } else if cmd.delete {
+                // clients::delete_client(conn)?;
+                println!("Deleting client");
+            } else if cmd.update {
+                // clients::edit_client(conn)?;
+                println!("Edit client");
             } else {
                 match cmd.action {
-                    Some(ClientsAction::List) | None => println!("Viewing client"), //creditors::list_creditors(conn)?,
+                    Some(ClientAction::List) | None => println!("Viewing client"), //creditors::list_creditors(conn)?,
                 }
             }
         }
-        Entity::Settings(cmd) => match cmd.action {
-            SettingsAction::View => settings::view_settings(conn)?,
-            SettingsAction::Update => settings::update_settings(conn)?,
-        },
+        Entity::Settings(cmd) => {
+            if cmd.update {
+                settings::update_settings(conn)?;
+            } else {
+                match cmd.action {
+                    Some(SettingsAction::View) | None => settings::view_settings(conn)?,
+                }
+            }
+        }
         Entity::Print => print::print_invoice(conn)?,
     }
 

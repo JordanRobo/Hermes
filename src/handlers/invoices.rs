@@ -2,7 +2,9 @@ use crate::autocomplete::{fetch_client_names, ClientAutocompleter};
 use crate::models::{Invoice, NewInvoice, NewInvoiceItem};
 use crate::utils;
 use chrono::Days;
-use comfy_table::Table;
+use comfy_table::modifiers::UTF8_ROUND_CORNERS;
+use comfy_table::presets::UTF8_FULL;
+use comfy_table::{Cell, Table};
 use diesel::prelude::*;
 use inquire::{required, Confirm, CustomType, Text};
 
@@ -50,10 +52,11 @@ pub fn create_invoice(conn: &mut SqliteConnection) -> anyhow::Result<()> {
     let autocompleter = ClientAutocompleter::new(clients);
     let new_id = utils::generate_invoice_id() as i32;
 
-    let new_date = utils::get_today().to_string();
+    let new_date = utils::get_today().format("%d / %m / %Y").to_string();
     let new_due_date = utils::get_today()
         .checked_add_days(Days::new(14))
         .unwrap()
+        .format("%d / %m / %Y")
         .to_string();
     let new_client = Text::new("Invoice for:")
         .with_validator(required!("Client is required"))
@@ -114,7 +117,22 @@ pub fn list_invoices(conn: &mut SqliteConnection) -> anyhow::Result<()> {
     use crate::schema::invoices::dsl::*;
 
     let mut table = Table::new();
-    table.set_header(vec!["ID", "Date", "Client", "Total"]);
+    table
+        .load_preset(UTF8_FULL)
+        .apply_modifier(UTF8_ROUND_CORNERS);
+
+    let headers = vec!["ID", "Date", "Client", "Total"];
+    let mut header_cells = Vec::new();
+
+    for header in headers {
+        header_cells.push(
+            Cell::new(header)
+                .add_attribute(comfy_table::Attribute::Bold)
+                .fg(comfy_table::Color::Cyan),
+        );
+    }
+
+    table.set_header(header_cells);
 
     let invoices_list: Vec<Invoice> = invoices.load(conn)?;
 
@@ -123,7 +141,7 @@ pub fn list_invoices(conn: &mut SqliteConnection) -> anyhow::Result<()> {
             invoice.id.unwrap().to_string(),
             invoice.date,
             invoice.client_name,
-            format!("${:.2}", invoice.total),
+            format!("${:.0}", invoice.total),
         ]);
     }
 
@@ -132,19 +150,39 @@ pub fn list_invoices(conn: &mut SqliteConnection) -> anyhow::Result<()> {
     Ok(())
 }
 
-// pub fn edit_invoice(conn: &mut SqliteConnection, id: &str) -> anyhow::Result<()> {
-//     println!("Editing invoice with ID: {}", id);
+pub fn edit_invoice(conn: &mut SqliteConnection) -> anyhow::Result<()> {
+    use crate::schema::invoices::dsl::*;
 
-//     Ok(())
-// }
+    let input_id = Text::new("Which invoice would you like to edit?")
+        .with_help_message("Enter ID of Invoice to update.")
+        .with_validator(required!("ID is required"))
+        .prompt()?;
 
-// pub fn delete_invoice(conn: &mut SqliteConnection, id: &str) -> anyhow::Result<()> {
-//     println!("Deleted invoice with ID: {}", id);
+    let invoice_id = input_id.parse::<i32>()?;
 
-//     Ok(())
-// }
+    println!("Editing invoice {invoice_id}");
 
-// pub fn view_invoice(conn: &mut SqliteConnection, id: &str) -> anyhow::Result<()> {
+    Ok(())
+}
+
+pub fn delete_invoice(conn: &mut SqliteConnection) -> anyhow::Result<()> {
+    use crate::schema::invoices::dsl::*;
+
+    let input_id = Text::new("Which invoice would you like to delete?")
+        .with_help_message("Enter ID of Invoice to delete.")
+        .with_validator(required!("ID is required"))
+        .prompt()?;
+
+    let invoice_id = input_id.parse::<i32>()?;
+
+    diesel::delete(invoices.filter(id.eq(Some(invoice_id)))).execute(conn)?;
+
+    println!("Deleted invoice {invoice_id}");
+
+    Ok(())
+}
+
+// pub fn view_invoice(conn: &mut SqliteConnection) -> anyhow::Result<()> {
 //     println!("Viewing invoice with ID: {}", id);
 
 //     Ok(())

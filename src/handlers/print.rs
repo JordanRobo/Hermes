@@ -98,21 +98,21 @@ pub fn print_invoice(conn: &mut SqliteConnection) -> anyhow::Result<()> {
     );
     text_layer.use_text(
         format!("{}", print_invoice.invoice.date),
-        12.0,
+        10.0,
         Mm(175.0),
         Mm(248.75),
         &font,
     );
     text_layer.use_text(
         format!("{}", print_invoice.invoice.due_date),
-        12.0,
+        10.0,
         Mm(175.0),
         Mm(238.86),
         &font,
     );
     text_layer.use_text(
         format!("${:.0}", print_invoice.invoice.total),
-        14.0,
+        12.0,
         Mm(175.0),
         Mm(228.81),
         &strong,
@@ -168,14 +168,14 @@ pub fn print_invoice(conn: &mut SqliteConnection) -> anyhow::Result<()> {
             &strong,
         );
         text_layer.use_text(
-            format!("${:.2}", item.unit_price),
+            format!("${:.0}", item.unit_price),
             10.0,
             Mm(132.0),
             Mm(y_position),
             &strong,
         );
         text_layer.use_text(
-            format!("${:.2}", item.gst),
+            format!("${:.0}", item.gst),
             10.0,
             Mm(168.0),
             Mm(y_position),
@@ -193,15 +193,15 @@ pub fn print_invoice(conn: &mut SqliteConnection) -> anyhow::Result<()> {
 
     // Add totals
     text_layer.use_text(
-        format!("${:.2}", print_invoice.invoice.gst),
-        12.0,
+        format!("${:.0}", print_invoice.invoice.gst),
+        10.0,
         Mm(181.0),
         Mm(107.54),
         &font,
     );
     text_layer.use_text(
         format!("${:.0}", print_invoice.invoice.total),
-        14.0,
+        12.0,
         Mm(181.0),
         Mm(99.04),
         &strong,

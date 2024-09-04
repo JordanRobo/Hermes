@@ -9,23 +9,20 @@ pub struct HermesArgs {
 
 #[derive(Debug, Subcommand)]
 pub enum Entity {
-    Invoices(InvoicesCommand),
-    Clients(ClientsCommand),
+    Invoice(InvoiceCommand),
+    Client(ClientCommand),
     Settings(SettingsCommand),
     Print,
 }
 
 #[derive(Debug, Args)]
-pub struct InvoicesCommand {
+pub struct InvoiceCommand {
     #[clap(subcommand)]
-    pub action: Option<InvoicesAction>,
+    pub action: Option<InvoiceAction>,
 
     /// Create a new invoice
     #[clap(short = 'N', long = "new")]
     pub new: bool,
-
-    /// Invoice ID for update or delete operations
-    pub id: Option<String>,
 
     /// Delete the invoice
     #[clap(short = 'D', long = "delete")]
@@ -37,48 +34,47 @@ pub struct InvoicesCommand {
 }
 
 #[derive(Debug, Subcommand)]
-pub enum InvoicesAction {
+pub enum InvoiceAction {
     /// List all invoices (default if no subcommand is provided)
     List,
 }
 
 #[derive(Debug, Args)]
-pub struct ClientsCommand {
+pub struct ClientCommand {
     #[clap(subcommand)]
-    pub action: Option<ClientsAction>,
+    pub action: Option<ClientAction>,
 
-    /// Create a new buyer
+    /// Create a new client
     #[clap(short = 'N', long = "new")]
     pub new: bool,
 
-    /// Buyer ID for update or delete operations
-    pub id: Option<String>,
-
-    /// Delete the buyer
+    /// Delete the client
     #[clap(short = 'D', long = "delete")]
     pub delete: bool,
 
-    /// Update the buyer
+    /// Update the client
     #[clap(short = 'U', long = "update")]
     pub update: bool,
 }
 
 #[derive(Debug, Subcommand)]
-pub enum ClientsAction {
-    /// List all buyers (default if no subcommand is provided)
+pub enum ClientAction {
+    /// List all clients (default if no subcommand is provided)
     List,
 }
 
 #[derive(Debug, Args)]
 pub struct SettingsCommand {
     #[clap(subcommand)]
-    pub action: SettingsAction,
+    pub action: Option<SettingsAction>,
+
+    /// Update settings
+    #[clap(short = 'U', long = "update")]
+    pub update: bool,
 }
 
 #[derive(Debug, Subcommand)]
 pub enum SettingsAction {
-    /// View settings
+    /// View settings (default if no subcommand is provided)
     View,
-    /// Update settings
-    Update,
 }
